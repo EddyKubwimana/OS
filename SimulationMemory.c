@@ -7,43 +7,41 @@
 
 // Function to simulate the loading of pages into memory frames
 void allocatePages(int numPages, int *frameMap, int framePool[]) {
-    int allocatedPages = 0;  // Track the number of pages allocated
+    int allocatedPages = 0;  
     
     while (allocatedPages < numPages) {
         int randomFrame;
-        int attempts = 0;  // Avoid infinite loops in case all frames are occupied
-
-        // Try finding a free frame, if no free frames are left, warn and exit
+        int attempts = 0;  
         do {
             randomFrame = rand() % NUM_FRAMES; 
             attempts++;
             if (attempts > NUM_FRAMES) {
-                printf("Warning: The memory is full, there is no frame to hold page %d\n", allocatedPages);
+                printf("There is no enough space to hold the job %d\n", allocatedPages);
                 return;
             }
         } while (framePool[randomFrame] != -1);
 
-        // Assign the page to the frame
+       
         framePool[randomFrame] = allocatedPages;
         frameMap[allocatedPages] = randomFrame;
         allocatedPages++;
     }
 
-    // Print frame and page mapping as a table
+
     printf("\n===================================================================\n");
 
     printf("Memory Frame Allocation:\n\n");
     
     printf("\n===================================================================\n");
 
-    // Print the frame numbers in the first row
+  
     printf("Frames:   ");
     for (int i = 0; i < NUM_FRAMES; i++) {
         printf("%3d ", i);
     }
     printf("\n");
 
-    // Print the page numbers (or empty slots) in the second row
+
     printf("Pages:    ");
     for (int i = 0; i < NUM_FRAMES; i++) {
         if (framePool[i] != -1) {
@@ -53,22 +51,6 @@ void allocatePages(int numPages, int *frameMap, int framePool[]) {
         }
     }
     printf("\n===================================================================\n");
-}
-
-// Function for address resolution
-void resolveAddress(int taskSize, int numPages, int *frameMap, int logicAddr) {
-    int pageIndex = logicAddr / PAGE_SIZE;
-    int displacement = logicAddr % PAGE_SIZE;
-
-    if (pageIndex >= numPages) {
-        printf("Warning: Logical address exceeds task size!\n");
-        return;
-    }
-    int mappedFrame = frameMap[pageIndex];
-    int physicalAddr = mappedFrame * PAGE_SIZE + displacement;
-
-    printf("Logical Address %d -> Physical Address %d\n", logicAddr, physicalAddr);
-     printf("\n===================================================================\n");
 }
 
 int main() {
@@ -115,10 +97,21 @@ int main() {
 
     // Request a logical address for address resolution
     printf("\nEnter a logical address to resolve (0 to %d): ", taskSize - 1);
-    fflush(stdout);  // Flush the output buffer to ensure prompt visibility
+    fflush(stdout); 
     scanf("%d", &logicalAddr);
 
-    resolveAddress(taskSize, numPages, frameMap, logicalAddr);
+    
+    int pageIndex = logicalAddr / PAGE_SIZE;
+    int displacement = logicalAddr % PAGE_SIZE;
+
+    if (pageIndex >= numPages) {
+        printf("Warning: Logical address exceeds task size!\n");
+    }
+    int mappedFrame = frameMap[pageIndex];
+    int physicalAddr = mappedFrame * PAGE_SIZE + displacement;
+
+    printf("Logical Address %d -> Physical Address %d\n", logicalAddr, physicalAddr);
+     printf("\n===================================================================\n");
 
     return 0;
 }
